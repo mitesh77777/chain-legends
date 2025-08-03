@@ -1,26 +1,127 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0f0f23;
+  --foreground: #ededed;
+  --card: #1a1a2e;
+  --card-foreground: #ededed;
+  --primary: #8B5CF6;
+  --primary-foreground: #ffffff;
+  --secondary: #3B82F6;
+  --secondary-foreground: #ffffff;
+  --accent: #10B981;
+  --accent-foreground: #ffffff;
+  --muted: #374151;
+  --muted-foreground: #9CA3AF;
+  --border: #374151;
+  --input: #374151;
+  --ring: #8B5CF6;
+  --destructive: #EF4444;
+  --destructive-foreground: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-game: 'Orbitron', monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #0f0f23;
     --foreground: #ededed;
   }
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+.game-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.battle-arena-bg {
+  background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.3) 0%, rgba(59, 130, 246, 0.2) 50%, rgba(16, 185, 129, 0.1) 100%),
+              linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+}
+
+.element-fire {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+}
+
+.element-water {
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+}
+
+.element-earth {
+  background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+}
+
+.element-air {
+  background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+}
+
+.fighter-card {
+  @apply bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm border border-gray-700/50 rounded-xl p-4 shadow-2xl transition-all duration-300 hover:shadow-purple-500/20 hover:scale-105;
+}
+
+.battle-button {
+  @apply bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95;
+}
+
+.health-bar {
+  @apply bg-gradient-to-r from-red-500 to-red-600 h-4 rounded-full transition-all duration-500 ease-out;
+}
+
+.xp-bar {
+  @apply bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500 ease-out;
+}
+
+.glow-effect {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+.battle-glow {
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.6);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.8);
 }
