@@ -2,6 +2,68 @@
 
 A complete browser-based blockchain battle arena game built with Next.js 14, Sequence Wallet, Thirdweb, and Supabase.
 
+## 🙏 Sponsor Integration
+
+This project was made possible by our amazing sponsors who provided essential Web3 infrastructure:
+
+### 🔗 Sequence Integration
+**Sponsor**: [Sequence](https://sequence.xyz)
+
+Sequence powers our wallet infrastructure and provides seamless Web3 onboarding:
+
+- **Wallet-as-a-Service**: Users can create wallets with just an email/social login
+- **Gasless Transactions**: Sponsored transactions for a smooth gaming experience
+- **Multi-chain Support**: Built-in support for multiple blockchains
+- **Smart Contract Wallets**: Enhanced security with programmable wallets
+- **Developer Tools**: Comprehensive SDK for wallet integration
+
+**Implementation**:
+```typescript
+// Wallet provider setup with Sequence
+import { SequenceWaaS } from '@0xsequence/waas'
+
+const sequenceWaas = new SequenceWaaS({
+  projectAccessKey: process.env.NEXT_PUBLIC_SEQUENCE_PROJECT_ACCESS_KEY,
+  waasConfigKey: process.env.NEXT_PUBLIC_SEQUENCE_WAAS_CONFIG_KEY,
+})
+```
+
+### ⚡ Thirdweb Integration
+**Sponsor**: [Thirdweb](https://thirdweb.com)
+
+Thirdweb provides our smart contract infrastructure and blockchain development tools:
+
+- **Smart Contract SDK**: Pre-built, audited contracts for NFTs and tokens
+- **RPC Infrastructure**: Reliable blockchain connectivity via Thirdweb RPC
+- **Contract Dashboard**: Easy deployment and management of smart contracts
+- **Token Contracts**: ERC-20 LEGEND tokens for in-game currency
+- **NFT Contracts**: ERC-721 fighters with metadata and evolution mechanics
+
+**Implementation**:
+```typescript
+// Thirdweb client setup
+import { createThirdwebClient, getContract } from "thirdweb"
+
+export const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID!,
+})
+
+// Game token contract
+export const gameTokenContract = getContract({
+  client,
+  chain: etherlinkTestnet,
+  address: "0x..." // Deployed via Thirdweb Dashboard
+})
+```
+
+### 🌐 Etherlink Testnet
+**Blockchain**: Etherlink Testnet (Tezos Layer 2)
+
+- **Fast Transactions**: Sub-second confirmation times
+- **Low Fees**: Minimal gas costs for gaming transactions  
+- **EVM Compatible**: Full Ethereum tooling support
+- **Scalable**: High throughput for real-time gaming
+
 ## 🎮 Game Features
 
 - **Turn-based Combat**: Strategic battles with 4 actions (Attack, Defend, Special, Item)
@@ -58,10 +120,26 @@ A complete browser-based blockchain battle arena game built with Next.js 14, Seq
 - **Frontend**: Next.js 14, TypeScript, TailwindCSS
 - **Animations**: Framer Motion
 - **UI Components**: Radix UI
-- **Web3**: Sequence Wallet, Thirdweb SDK
+- **Web3 Infrastructure**: 
+  - **Sequence**: Wallet-as-a-Service, gasless transactions
+  - **Thirdweb**: Smart contracts, RPC infrastructure, token/NFT management
 - **Database**: Supabase (PostgreSQL)
 - **Real-time**: Supabase Realtime
-- **Blockchain**: Etherlink Testnet
+- **Blockchain**: Etherlink Testnet (Tezos Layer 2)
+
+## 💼 Sponsor-Powered Features
+
+### Sequence-Powered Features
+- **One-Click Onboarding**: Users can start playing with just email/social login
+- **Gasless Gaming**: All in-game transactions are sponsored for seamless UX
+- **Cross-Platform Wallets**: Works on mobile and desktop with same account
+- **Social Recovery**: Never lose access to your fighters and progress
+
+### Thirdweb-Powered Features  
+- **Smart Contract Dashboard**: Easy deployment and upgrades via Thirdweb console
+- **Token Economy**: LEGEND ERC-20 tokens with built-in reward mechanisms
+- **NFT Fighters**: ERC-721 contracts with evolution and breeding mechanics
+- **RPC Reliability**: 99.9% uptime via Thirdweb's infrastructure
 
 ## 🎯 Game Architecture
 
@@ -205,13 +283,6 @@ npm run type-check
 ## 📄 License
 
 This project is licensed under the MIT License.
-
-## 🆘 Support
-
-- Join our Discord: [discord-link]
-- Follow on Twitter: [@ChainLegends]
-- Documentation: [docs-link]
-
 ---
 
 Built with ❤️ for the Web3 gaming community
