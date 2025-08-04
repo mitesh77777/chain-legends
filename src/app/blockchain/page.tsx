@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { NFTFighterManager } from '@/components/game/NFTFighterManager'
-import { TokenRewardsSystem } from '@/components/game/TokenRewardsSystem'
+import TokenRewardsSystem from '@/components/game/TokenRewardsSystem'
 import { BlockchainBattle } from '@/components/game/BlockchainBattle'
-import { useWallet } from '@/components/wallet/WalletProvider'
+import { ConnectButton, useActiveAccount } from 'thirdweb/react'
+import { client, etherlinkTestnet } from '@/lib/contracts'
 import { Fighter, Element } from '@/types/game'
 import { generateRandomName, generateId } from '@/lib/utils'
 import { BattleEngine } from '@/lib/battle-engine'
@@ -29,7 +30,9 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 export default function BlockchainPage() {
-  const { isConnected, address } = useWallet()
+  const account = useActiveAccount()
+  const isConnected = !!account
+  const address = account?.address
   const [selectedFighters, setSelectedFighters] = useState<{
     player?: Fighter
     opponent?: Fighter
@@ -241,69 +244,67 @@ export default function BlockchainPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-4 bg-gray-800/50 border-gray-700">
-                  <TabsTrigger 
-                    value="overview" 
-                    className="data-[state=active]:bg-purple-600 data-[state=active]:text-white"
-                  >
-                    <TrendingUp className="h-4 w-4 mr-2" />
-                    Overview
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="fighters"
-                    className="data-[state=active]:bg-purple-600 data-[state=active]:text-white"
-                  >
-                    <Star className="h-4 w-4 mr-2" />
-                    NFT Fighters
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="rewards"
-                    className="data-[state=active]:bg-purple-600 data-[state=active]:text-white"
-                  >
-                    <Coins className="h-4 w-4 mr-2" />
-                    Rewards
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="battle"
-                    className="data-[state=active]:bg-purple-600 data-[state=active]:text-white"
-                  >
-                    <Swords className="h-4 w-4 mr-2" />
-                    Battle
-                  </TabsTrigger>
-                </TabsList>
+                        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-4 bg-gray-800 border-gray-700">
+              <TabsTrigger 
+                value="overview" 
+                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger 
+                value="fighters" 
+                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+              >
+                My Fighters
+              </TabsTrigger>
+              <TabsTrigger 
+                value="rewards" 
+                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+              >
+                Rewards
+              </TabsTrigger>
+              <TabsTrigger 
+                value="battle" 
+                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+              >
+                Quick Battle
+              </TabsTrigger>
+            </TabsList>
 
                 <TabsContent value="overview" className="space-y-6">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Quick Actions */}
-                    <Card className="bg-gray-900/50 border-gray-700">
+                    <Card className="bg-gradient-to-br from-purple-900/50 to-blue-900/50 border-purple-500/30">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <Zap className="h-5 w-5 text-yellow-400" />
-                          Quick Actions
+                          Get Started
                         </CardTitle>
+                        <p className="text-sm text-gray-300">
+                          New to Chain Legends? Start your journey here!
+                        </p>
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <Button 
                           onClick={() => setActiveTab('fighters')}
-                          className="w-full justify-start bg-purple-600 hover:bg-purple-700"
+                          className="w-full justify-start bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                         >
                           <Star className="mr-2 h-4 w-4" />
-                          Mint New Fighter
+                          1. Mint Your First Fighter (FREE)
                         </Button>
-                        <Button 
-                          onClick={generateDemoFighters}
-                          className="w-full justify-start bg-blue-600 hover:bg-blue-700"
-                        >
-                          <Swords className="mr-2 h-4 w-4" />
-                          Start Blockchain Battle
-                        </Button>
+                        <Link href="/battle/on-chain" className="w-full block">
+                          <Button className="w-full justify-start bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700">
+                            <Swords className="mr-2 h-4 w-4" />
+                            2. Battle & Earn Tokens
+                          </Button>
+                        </Link>
                         <Button 
                           onClick={() => setActiveTab('rewards')}
-                          className="w-full justify-start bg-green-600 hover:bg-green-700"
+                          className="w-full justify-start bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                         >
                           <Coins className="mr-2 h-4 w-4" />
-                          Claim Rewards
+                          3. Track Your Rewards
                         </Button>
                       </CardContent>
                     </Card>

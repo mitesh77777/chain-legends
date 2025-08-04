@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Orbitron } from "next/font/google";
 import "./globals.css";
 import { WalletProvider } from "@/components/wallet/WalletProvider";
+import { ThirdwebProvider } from "thirdweb/react";
+import { client, etherlinkTestnet } from "@/lib/contracts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,9 +37,15 @@ export const metadata: Metadata = {
     title: "Chain Legends - Web3 Battle Arena",
     description: "The ultimate blockchain-based battle arena game. Collect, battle, and earn with your NFT fighters!",
   },
-  viewport: "width=device-width, initial-scale=1",
-  themeColor: "#8B5CF6",
 };
+
+export function generateViewport() {
+  return {
+    width: 'device-width',
+    initialScale: 1,
+    themeColor: '#8B5CF6',
+  }
+}
 
 export default function RootLayout({
   children,
@@ -50,9 +58,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} font-sans antialiased min-h-screen`}
       >
         <div id="root" className="min-h-screen">
-          <WalletProvider>
-            {children}
-          </WalletProvider>
+          <ThirdwebProvider>
+            <WalletProvider>
+              {children}
+            </WalletProvider>
+          </ThirdwebProvider>
         </div>
       </body>
     </html>

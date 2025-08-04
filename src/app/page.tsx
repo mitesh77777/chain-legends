@@ -6,12 +6,12 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { WalletConnect } from '@/components/wallet/WalletConnect'
+import { ConnectButton, useActiveAccount } from 'thirdweb/react'
 import { FighterCard } from '@/components/game/FighterCard'
-import { useWallet } from '@/components/wallet/WalletProvider'
 import { Fighter, Element } from '@/types/game'
 import { generateRandomName, generateId } from '@/lib/utils'
 import { BattleEngine } from '@/lib/battle-engine'
+import { client, etherlinkTestnet } from '@/lib/contracts'
 import { 
   Swords, 
   Trophy, 
@@ -25,7 +25,9 @@ import {
 } from 'lucide-react'
 
 export default function HomePage() {
-  const { isConnected, address } = useWallet()
+  const account = useActiveAccount()
+  const isConnected = !!account
+  const address = account?.address
   const [playerFighter, setPlayerFighter] = useState<Fighter | null>(null)
   const [isGeneratingFighter, setIsGeneratingFighter] = useState(false)
 
@@ -118,19 +120,41 @@ export default function HomePage() {
             </div>
             
             <div className="flex items-center space-x-4">
+              <Link href="/battle/on-chain">
+                <Button variant="outline" size="sm">
+                  <Zap className="mr-2 h-4 w-4" />
+                  On-Chain Battle
+                </Button>
+              </Link>
               <Link href="/battle/demo-room">
                 <Button variant="outline" size="sm">
                   <Play className="mr-2 h-4 w-4" />
-                  Quick Battle
+                  Practice
                 </Button>
               </Link>
-              <Link href="/tournament">
+              <Link href="/blockchain">
                 <Button variant="outline" size="sm">
-                  <Trophy className="mr-2 h-4 w-4" />
-                  Tournament
+                  <Star className="mr-2 h-4 w-4" />
+                  Dashboard
                 </Button>
               </Link>
-              <WalletConnect />
+              <ConnectButton
+                client={client}
+                chain={etherlinkTestnet}
+                connectButton={{
+                  label: "Connect Wallet",
+                  style: {
+                    backgroundColor: "#8B5CF6",
+                    color: "white",
+                    borderRadius: "8px",
+                    padding: "8px 16px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    border: "none",
+                    cursor: "pointer"
+                  }
+                }}
+              />
             </div>
           </div>
         </div>
@@ -163,7 +187,24 @@ export default function HomePage() {
                 >
                   <h3 className="text-2xl font-bold mb-4 text-white">Ready to Play?</h3>
                   <p className="text-gray-300 mb-6">Connect your wallet to start your journey as a Chain Legend!</p>
-                  <WalletConnect className="w-full py-3 text-lg" />
+                  <ConnectButton
+                    client={client}
+                    chain={etherlinkTestnet}
+                    connectButton={{
+                      label: "Connect Wallet to Play",
+                      style: {
+                        width: "100%",
+                        backgroundColor: "#8B5CF6",
+                        color: "white",
+                        borderRadius: "8px",
+                        padding: "12px 24px",
+                        fontSize: "18px",
+                        fontWeight: "600",
+                        border: "none",
+                        cursor: "pointer"
+                      }
+                    }}
+                  />
                 </motion.div>
               ) : (
                 <motion.div
@@ -175,36 +216,54 @@ export default function HomePage() {
                   <div className="flex items-center justify-center mb-4">
                     <h3 className="text-2xl font-bold text-white">Welcome, Champion!</h3>
                   </div>
-                  <WalletConnect className="mb-4" />
+                  <ConnectButton
+                    client={client}
+                    chain={etherlinkTestnet}
+                    connectButton={{
+                      label: "Connected",
+                      style: {
+                        width: "100%",
+                        backgroundColor: "#10B981",
+                        color: "white",
+                        borderRadius: "8px",
+                        padding: "8px 16px",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                        border: "none",
+                        cursor: "pointer",
+                        marginBottom: "16px"
+                      }
+                    }}
+                  />
                   
                   {playerFighter ? (
                     <div className="space-y-4">
                       <p className="text-gray-300">Your fighter is ready for battle!</p>
                       <div className="grid grid-cols-1 gap-3">
+                        <Link href="/battle/on-chain" className="w-full">
+                          <Button 
+                            className="w-full py-3 text-lg bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                            size="lg"
+                          >
+                            <Zap className="mr-2 h-5 w-5" />
+                            On-Chain Battle (Earn Rewards!)
+                          </Button>
+                        </Link>
                         <Button 
                           onClick={handleStartBattle}
                           className="w-full py-3 text-lg bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700"
                           size="lg"
                         >
                           <Play className="mr-2 h-5 w-5" />
-                          Quick Battle
+                          Practice Battle
                         </Button>
-                        <Link href="/tournament" className="w-full">
-                          <Button 
-                            className="w-full py-3 text-lg bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700"
-                            size="lg"
-                          >
-                            <Trophy className="mr-2 h-5 w-5" />
-                            Join Tournament
-                          </Button>
-                        </Link>
                         <Link href="/blockchain" className="w-full">
                           <Button 
-                            className="w-full py-3 text-lg bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                            className="w-full py-3 text-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                             size="lg"
                           >
                             <Star className="mr-2 h-5 w-5" />
-                            Blockchain Dashboard
+                            Manage Fighters & Tokens
                           </Button>
                         </Link>
                       </div>

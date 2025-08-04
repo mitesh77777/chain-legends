@@ -25,7 +25,7 @@ export const etherlinkTestnet = defineChain({
 
 // Initialize Thirdweb client
 export const client = createThirdwebClient({
-  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || 'your-client-id',
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID!,
 })
 
 // Contract addresses (deployed on Etherlink testnet)
@@ -61,6 +61,9 @@ const tournamentContract = getContract({
   chain: etherlinkTestnet,
   address: CONTRACT_ADDRESSES.TOURNAMENT,
 })
+
+// Export contracts for use in React hooks
+export { gameTokenContract, fighterContract, battleArenaContract, tournamentContract }
 
 // Contract interaction functions (compatible with Thirdweb v5)
 
@@ -242,6 +245,105 @@ export async function transferTokens(
     account,
   })
   return result.transactionHash
+}
+
+// Claim daily bonus tokens (using actual contract method)
+export async function claimDailyBonus(account: any): Promise<string> {
+  try {
+    // Call the mintDailyReward method (requires authorized minter)
+    const transaction = prepareContractCall({
+      contract: gameTokenContract,
+      method: "function mintDailyReward(address user)",
+      params: [account.address],
+    })
+
+    const result = await sendTransaction({
+      transaction,
+      account,
+    })
+    return result.transactionHash
+  } catch (error) {
+    console.error('Failed to claim daily bonus:', error)
+    // If not authorized minter, try emergency mint (owner only)
+    try {
+      const dailyAmount = BigInt(50 * 10**18) // 50 tokens in wei
+      const emergencyTransaction = prepareContractCall({
+        contract: gameTokenContract,
+        method: "function emergencyMint(address recipient, uint256 amount)",
+        params: [account.address, dailyAmount],
+      })
+
+      const emergencyResult = await sendTransaction({
+        transaction: emergencyTransaction,
+        account,
+      })
+      return emergencyResult.transactionHash
+    } catch (emergencyError) {
+      throw new Error('Unable to claim daily bonus. You may not be authorized or eligible.')
+    }
+  }
+}
+
+// Claim starter tokens (using actual contract method)
+export async function claimStarterTokens(account: any): Promise<string> {
+  try {
+    // Call the mintReward method for welcome bonus (requires authorized minter)
+    const welcomeAmount = BigInt(100 * 10**18) // 100 tokens in wei
+    const transaction = prepareContractCall({
+      contract: gameTokenContract,
+      method: "function mintReward(address recipient, uint256 amount, string memory reason)",
+      params: [account.address, welcomeAmount, "Welcome Bonus"],
+    })
+
+    const result = await sendTransaction({
+      transaction,
+      account,
+    })
+    return result.transactionHash
+  } catch (error) {
+    console.error('Failed to claim starter tokens:', error)
+    // If not authorized minter, try emergency mint (owner only)
+    try {
+      const welcomeAmount = BigInt(100 * 10**18) // 100 tokens in wei
+      const emergencyTransaction = prepareContractCall({
+        contract: gameTokenContract,
+        method: "function emergencyMint(address recipient, uint256 amount)",
+        params: [account.address, welcomeAmount],
+      })
+
+      const emergencyResult = await sendTransaction({
+        transaction: emergencyTransaction,
+        account,
+      })
+      return emergencyResult.transactionHash
+    } catch (emergencyError) {
+      throw new Error('Unable to claim welcome bonus. You may not be authorized or eligible.')
+    }
+  }
+}
+
+// Check if user has claimed daily bonus today (simplified for demo)
+export async function canClaimDailyBonus(address: string): Promise<boolean> {
+  try {
+    // Check if user has low balance (simplified eligibility check)
+    const balance = await getTokenBalance(address)
+    return balance < 1000 // Allow if balance is less than 1000 tokens
+  } catch (error) {
+    console.error('Error checking daily bonus eligibility:', error)
+    return true // Default to allowing claim for demo
+  }
+}
+
+// Check if user has claimed starter tokens (simplified for demo)
+export async function canClaimStarterTokens(address: string): Promise<boolean> {
+  try {
+    // Check if user has very low balance (new user check)
+    const balance = await getTokenBalance(address)
+    return balance < 50 // Allow if balance is less than 50 tokens (likely new user)
+  } catch (error) {
+    console.error('Error checking welcome bonus eligibility:', error)
+    return true // Default to allowing claim for demo
+  }
 }
 
 // Battle utilities
