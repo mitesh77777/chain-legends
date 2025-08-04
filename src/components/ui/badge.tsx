@@ -23,6 +23,7 @@ const badgeVariants = cva(
         rare: "border-transparent bg-blue-400 text-white",
         epic: "border-transparent bg-purple-500 text-white",
         legendary: "border-transparent bg-yellow-500 text-black",
+        success: "border-transparent bg-green-500 text-white",
       },
     },
     defaultVariants: {

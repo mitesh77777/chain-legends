@@ -1,17 +1,10 @@
 import { sequence } from '0xsequence'
 
-export const PROJECT_ACCESS_KEY = process.env.NEXT_PUBLIC_SEQUENCE_PROJECT_ACCESS_KEY || 'demo_key'
+export const PROJECT_ACCESS_KEY = process.env.NEXT_PUBLIC_SEQUENCE_PROJECT_ACCESS_KEY || ''
 
-// Initialize Sequence for Etherlink Testnet  
-export const sequenceWallet = sequence.initWallet({
-  projectAccessKey: PROJECT_ACCESS_KEY,
-  defaultNetwork: 'etherlink-testnet',
-  rpcUrl: process.env.NEXT_PUBLIC_ETHERLINK_RPC_URL || 'https://node.ghostnet.etherlink.com'
-})
-
-// Configure for Etherlink testnet
+// Configuration for Etherlink testnet
 export const ETHERLINK_TESTNET = {
-  chainId: 128123,
+  chainId: parseInt(process.env.NEXT_PUBLIC_ETHERLINK_CHAIN_ID || '128123'),
   name: 'Etherlink Testnet',
   nativeCurrency: {
     name: 'XTZ',
@@ -20,10 +13,10 @@ export const ETHERLINK_TESTNET = {
   },
   rpcUrls: {
     default: {
-      http: ['https://node.ghostnet.etherlink.com'],
+      http: [process.env.NEXT_PUBLIC_ETHERLINK_RPC_URL || 'https://128123.rpc.thirdweb.com'],
     },
     public: {
-      http: ['https://node.ghostnet.etherlink.com'],
+      http: [process.env.NEXT_PUBLIC_ETHERLINK_RPC_URL || 'https://128123.rpc.thirdweb.com'],
     },
   },
   blockExplorers: {
@@ -33,6 +26,20 @@ export const ETHERLINK_TESTNET = {
     },
   },
   testnet: true,
+}
+
+// Initialize Sequence only on client side
+export const getSequenceWallet = () => {
+  if (typeof window === 'undefined' || !PROJECT_ACCESS_KEY) {
+    return null
+  }
+  
+  try {
+    return sequence.initWallet(PROJECT_ACCESS_KEY)
+  } catch (error) {
+    console.error('Failed to initialize Sequence wallet:', error)
+    return null
+  }
 }
 
 export const getNetwork = () => {

@@ -10,8 +10,12 @@ import { BattleActions } from './BattleActions'
 import { BattleLog, BattleResultLog } from './BattleLog'
 import { BattleState, BattleAction, BattleStatus, Fighter } from '@/types/game'
 import { BattleEngine } from '@/lib/battle-engine'
+import { BattleAI } from '@/lib/battle-ai'
 import { cn } from '@/lib/utils'
-import { Swords, Clock, Trophy, Users } from 'lucide-react'
+import { Swords, Clock, Trophy, Users, Bot, User } from 'lucide-react'
+import { BattleEffects } from './BattleEffects'
+import { StreamChat } from './StreamChat'
+import { SoundManager } from './BattleAudio'
 
 interface BattleArenaProps {
   roomId: string
@@ -56,6 +60,15 @@ export function BattleArena({
   const [opponentAction, setOpponentAction] = useState<BattleAction | null>(null)
   const [isWaitingForOpponent, setIsWaitingForOpponent] = useState(false)
   const [battleStartTime] = useState(Date.now())
+  const [aiDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
+  const [currentEffect, setCurrentEffect] = useState<{
+    type: 'attack' | 'defend' | 'special' | 'heal' | 'critical' | 'dodge' | 'weakness'
+    element?: Element
+    damage?: number
+    isVisible: boolean
+  } | null>(null)
+  const [spectatorCount] = useState(Math.floor(Math.random() * 200) + 50)
+  const [battleIntensity, setBattleIntensity] = useState(0)
 
   // Handle player action selection
   const handlePlayerAction = useCallback((action: BattleAction) => {
@@ -66,13 +79,19 @@ export function BattleArena({
       onActionSubmit(action)
     }
     
-    // Simulate opponent action for demo (in real game, this comes from server)
+    // Use smart AI for opponent action
     setTimeout(() => {
-      const opponentActions = [BattleAction.ATTACK, BattleAction.DEFEND, BattleAction.SPECIAL]
-      const randomAction = opponentActions[Math.floor(Math.random() * opponentActions.length)]
-      setOpponentAction(randomAction)
-    }, 1000 + Math.random() * 2000) // Random delay 1-3 seconds
-  }, [onActionSubmit])
+      const aiAction = BattleAI.chooseAction(
+        battleState.player2.fighter,
+        battleState.player2.currentHealth,
+        battleState.player1.fighter,
+        battleState.player1.currentHealth,
+        battleState,
+        aiDifficulty
+      )
+      setOpponentAction(aiAction)
+    }, 1500 + Math.random() * 1500) // 1.5-3 second thinking time
+  }, [onActionSubmit, battleState, aiDifficulty])
 
   // Process turn when both actions are available
   useEffect(() => {
@@ -82,6 +101,55 @@ export function BattleArena({
         playerAction,
         opponentAction
       )
+      
+      // Calculate battle effects
+      const lastAction = newBattleState.actions[newBattleState.actions.length - 1]
+      if (lastAction) {
+        const damage = lastAction.damage || 0
+        const isCritical = damage > 50
+        const isWeakness = damage > 40
+        
+        let effectType: any = 'attack'
+        if (playerAction === BattleAction.DEFEND) effectType = 'defend'
+        else if (playerAction === BattleAction.SPECIAL) effectType = 'special'
+        else if (playerAction === BattleAction.ITEM) effectType = 'heal'
+        else if (isCritical) effectType = 'critical'
+        else if (isWeakness) effectType = 'weakness'
+        
+        // Show battle effects
+        setCurrentEffect({
+          type: effectType,
+          element: battleState.player1.fighter.element as any,
+          damage,
+          isVisible: true
+        })
+        
+        // Update battle intensity
+        const healthRatio = Math.min(
+          battleState.player1.currentHealth / battleState.player1.fighter.maxHealth,
+          battleState.player2.currentHealth / battleState.player2.fighter.maxHealth
+        )
+        setBattleIntensity(1 - healthRatio)
+        
+        // Add system message to chat
+        if ((window as any).battleChatSystem) {
+          const messages = [
+            `${battleState.player1.fighter.name} deals ${damage} damage!`,
+            `Critical hit for ${damage} damage!`,
+            `${battleState.player1.fighter.name} defends successfully!`,
+            `Special attack deals ${damage} elemental damage!`
+          ]
+          const randomMessage = messages[Math.floor(Math.random() * messages.length)]
+          setTimeout(() => {
+            (window as any).battleChatSystem(randomMessage)
+          }, 1000)
+        }
+        
+        // Clear effect after animation
+        setTimeout(() => {
+          setCurrentEffect(null)
+        }, 1500)
+      }
       
       setBattleState(newBattleState)
       setPlayerAction(null)
@@ -125,6 +193,10 @@ export function BattleArena({
           
           <div className="flex items-center gap-4">
             <Badge variant="outline" className="flex items-center gap-1">
+              <Bot className="h-3 w-3" />
+              AI: {aiDifficulty.charAt(0).toUpperCase() + aiDifficulty.slice(1)}
+            </Badge>
+            <Badge variant="outline" className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
               Turn {battleState.turnNumber}
             </Badge>
@@ -146,8 +218,9 @@ export function BattleArena({
         {/* Left Side - Player Fighter */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 mb-2">
-            <Users className="h-5 w-5 text-blue-400" />
+            <User className="h-5 w-5 text-blue-400" />
             <h2 className="text-lg font-semibold text-blue-400">Your Fighter</h2>
+            <Badge variant="secondary">Human</Badge>
           </div>
           
           <FighterCard
@@ -222,8 +295,11 @@ export function BattleArena({
         {/* Right Side - Opponent Fighter */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 mb-2">
-            <Users className="h-5 w-5 text-red-400" />
-            <h2 className="text-lg font-semibold text-red-400">Opponent</h2>
+            <Bot className="h-5 w-5 text-red-400" />
+            <h2 className="text-lg font-semibold text-red-400">AI Opponent</h2>
+            <Badge variant="destructive">
+              {aiDifficulty.charAt(0).toUpperCase() + aiDifficulty.slice(1)} AI
+            </Badge>
           </div>
           
           <FighterCard
