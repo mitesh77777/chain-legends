@@ -134,11 +134,17 @@ export default function DemoBattlePage() {
           <div className="flex items-start gap-3">
             <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0" />
             <div>
-              <h3 className="font-semibold text-yellow-400 mb-1">Demo Battle Mode</h3>
+              <h3 className="font-semibold text-yellow-400 mb-1">🔥 LIVE Battle Arena</h3>
               <p className="text-sm text-yellow-200/80">
-                This is a demonstration of the battle system. In the full game, you&apos;ll battle real players, 
-                earn XP, level up your fighters, and compete in tournaments for prizes.
+                Experience intense real-time combat with sound effects, visual feedback, and live spectator chat! 
+                This battle system creates the adrenaline rush of competitive gaming.
               </p>
+              <div className="mt-2 flex items-center gap-4 text-xs text-yellow-300">
+                <span>🎵 Dynamic Audio</span>
+                <span>💥 Visual Effects</span>
+                <span>💬 Live Chat</span>
+                <span>⚡ Real-time Pressure</span>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -168,26 +174,30 @@ export default function DemoBattlePage() {
           <h3 className="text-lg font-semibold text-white mb-4">How to Play</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-300">
             <div>
-              <h4 className="font-semibold text-purple-400 mb-2">Battle Actions</h4>
+              <h4 className="font-semibold text-purple-400 mb-2">⚔️ Battle Actions</h4>
               <ul className="space-y-1">
-                <li><strong>Attack (1):</strong> Deal damage to opponent</li>
-                <li><strong>Defend (2):</strong> Reduce incoming damage</li>
-                <li><strong>Special (3):</strong> Powerful elemental attack</li>
-                <li><strong>Heal (4):</strong> Restore your health</li>
+                <li><strong>Attack (1):</strong> 🗡️ Quick melee damage</li>
+                <li><strong>Defend (2):</strong> 🛡️ Reduce incoming damage by 50%</li>
+                <li><strong>Special (3):</strong> ⚡ Elemental power attack</li>
+                <li><strong>Heal (4):</strong> ❤️ Restore 25% health</li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-purple-400 mb-2">Element System</h4>
+              <h4 className="font-semibold text-purple-400 mb-2">🔥 Combat Tips</h4>
               <ul className="space-y-1">
-                <li><strong>Fire:</strong> Strong vs Earth, weak vs Water</li>
-                <li><strong>Water:</strong> Strong vs Fire, weak vs Air</li>
-                <li><strong>Earth:</strong> Strong vs Air, weak vs Fire</li>
-                <li><strong>Air:</strong> Strong vs Water, weak vs Earth</li>
+                <li><strong>Timing:</strong> ⏰ 10 seconds per turn</li>
+                <li><strong>Critical:</strong> 💥 Random 2x damage chance</li>
+                <li><strong>Elements:</strong> 🌟 Type advantages matter</li>
+                <li><strong>Strategy:</strong> 🧠 AI adapts to your moves</li>
               </ul>
             </div>
           </div>
-          <div className="mt-4 text-xs text-gray-400">
-            💡 Use keyboard shortcuts (1-4) for quick action selection!
+          <div className="mt-4 text-center">
+            <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-lg p-3">
+              <span className="text-sm font-bold text-purple-300">
+                💡 Pro Tip: Use keyboard shortcuts (1-4) for lightning-fast reactions! ⚡
+              </span>
+            </div>
           </div>
         </motion.div>
       </div>

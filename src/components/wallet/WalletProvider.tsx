@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { getSequenceWallet } from '@/lib/sequence'
 
 interface WalletContextType {
   isConnected: boolean
@@ -29,9 +30,15 @@ export function WalletProvider({ children }: WalletProviderProps) {
   const checkWalletConnection = async () => {
     try {
       setIsLoading(true)
-      const isConnected = await sequenceWallet.isConnected()
+      const wallet = getSequenceWallet()
+      if (!wallet) {
+        setIsLoading(false)
+        return
+      }
+      
+      const isConnected = await wallet.isConnected()
       if (isConnected) {
-        const signer = sequenceWallet.getSigner()
+        const signer = wallet.getSigner()
         const address = await signer.getAddress()
         setIsConnected(true)
         setAddress(address)
@@ -46,13 +53,18 @@ export function WalletProvider({ children }: WalletProviderProps) {
   const connect = async () => {
     try {
       setIsLoading(true)
-      const connectDetails = await sequenceWallet.connect({
+      const wallet = getSequenceWallet()
+      if (!wallet) {
+        throw new Error('Wallet not available')
+      }
+      
+      const connectDetails = await wallet.connect({
         app: 'Chain Legends',
         askForEmail: false,
       })
       
       if (connectDetails && connectDetails.connected) {
-        const signer = sequenceWallet.getSigner()
+        const signer = wallet.getSigner()
         const address = await signer.getAddress()
         setIsConnected(true)
         setAddress(address)
@@ -67,7 +79,10 @@ export function WalletProvider({ children }: WalletProviderProps) {
 
   const disconnect = async () => {
     try {
-      await sequenceWallet.disconnect()
+      const wallet = getSequenceWallet()
+      if (wallet) {
+        await wallet.disconnect()
+      }
       setIsConnected(false)
       setAddress(null)
     } catch (error) {

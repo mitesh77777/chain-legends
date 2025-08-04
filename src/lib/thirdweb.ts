@@ -13,14 +13,14 @@ export const client = createThirdwebClient({
 
 // Etherlink testnet configuration
 export const etherlinkTestnet = defineChain({
-  id: 128123,
+  id: parseInt(process.env.NEXT_PUBLIC_ETHERLINK_CHAIN_ID || '128123'),
   name: 'Etherlink Testnet',
   nativeCurrency: {
     name: 'XTZ',
     symbol: 'XTZ', 
     decimals: 18,
   },
-  rpc: 'https://node.ghostnet.etherlink.com',
+  rpc: process.env.NEXT_PUBLIC_ETHERLINK_RPC_URL || 'https://128123.rpc.thirdweb.com',
   blockExplorers: [
     {
       name: 'Etherlink Explorer',
